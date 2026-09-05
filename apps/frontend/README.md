@@ -1,75 +1,58 @@
-﻿# Frontend — Light Tracker Dashboard
+# Light Tracker frontend
 
-Mobile-first web dashboard built with Next.js.
+A responsive Next.js App Router prototype for the two-sensor Nigerian grid monitor. React, TypeScript, vanilla CSS, Lucide icons, and accessible CSS charts. No API, database, or credentials needed.
 
-## Owner
-Frontend / Product Lead
+## Run locally
 
-## Stack
-- Next.js (App Router)
-- Vanilla CSS
-- Inter font (Google Fonts)
-- Chart.js for bar charts
-
-## Setup
+Requires Node.js 22+.
 
 ```bash
-npm install
-cp .env.example .env.local
+cd apps/frontend
+npm ci
 npm run dev
 ```
 
-## Environment Variables
+Open http://localhost:3000. `npm run build` creates the static site in `out/`. `npm run typecheck` checks TypeScript. Serve `out/` with a static host; `next start` does not support static export.
 
-```
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_HOME_ID=home_abc123
-```
+## Deploy on Netlify
 
-## Folder Structure
+Import this repository. Root `netlify.toml` configures:
 
-```
-apps/frontend/
-├── app/                    # Next.js App Router pages
-│   ├── page.tsx            # Home dashboard
-│   ├── layout.tsx          # Root layout with font/meta
-│   └── globals.css         # Global styles and design tokens
-├── components/
-│   ├── StatusCard/         # The main ON/OFF/UNKNOWN card
-│   ├── MetricsRow/         # Grid hours, outage hours, count
-│   ├── EventTimeline/      # Today's event log
-│   ├── WeeklyChart/        # 7-day bar chart
-│   ├── TrackerHealth/      # Sensor A and B status
-│   └── CoverageIndicator/  # Data confidence badge
-├── lib/
-│   ├── api.ts              # Real API calls (replace mock-data.js on Day 8)
-│   ├── formatters.ts       # Duration, time, date formatting
-│   └── constants.ts        # STATE_CONFIG, color tokens
-└── mock-data.js            # Mock data matching API contract
-```
+- Base directory: `apps/frontend`
+- Build command: `npm run build`
+- Publish directory: `out` (relative to base)
+- Node.js: 22
 
-## Day-by-Day Build Guide
+No environment variables or server adapter needed. Alternatively, build locally and drag the **out folder** into Netlify's manual deploy interface.
 
-| Day | Task |
-|:---:|:---|
-| 4 | Init app, build StatusCard with mock data |
-| 5 | Build MetricsRow and CoverageIndicator |
-| 6 | Build EventTimeline and WeeklyChart |
-| 7 | Build TrackerHealth, empty/loading/error states |
-| 8 | Wire to live API, install hardware in your home |
-| 9 | Add auto-refresh, timezone handling, last-updated |
-| 10 | Edge-case testing, error message copy |
-| 11–14 | Pilot feedback, UI polish |
+## Interactive prototype
 
-## Design Tokens
+- Overview, Power history, Insights, and Devices views.
+- Today / This week summaries and selectable weekly bars.
+- Tap timeline segments for state and duration details.
+- Filter history by ON, OFF, or UNKNOWN.
+- Export a seven-day CSV with availability and coverage.
+- Preview ON, OFF, UNKNOWN, and SETUP_FAULT; sensor health follows.
+- Settings save home name and alert preference locally. Actual alert delivery is not implemented.
+- Help and notification dialogs with Escape and native focus trapping.
+- Mobile drawer, keyboard focus states, and reduced-motion support.
 
-```css
---color-on: #22c55e;
---color-off: #ef4444;
---color-unknown: #f59e0b;
---color-bg: #0a0a0a;
---color-surface: #141414;
---color-border: #2a2a2a;
---color-text: #f5f5f5;
---color-text-muted: #888;
-```
+## Data and backend handoff
+
+`lib/demo.ts` is the prototype data source. It uses a fixed snapshot at **5 September 2026, 18:00 WAT**, not live readings. Today has 13.5 hours ON, 4 hours OFF, and 0.5 hours UNKNOWN: 18 elapsed hours. Future hours remain blank. Availability is ON / (ON + OFF); coverage is (ON + OFF) / elapsed time. Weekly figures are weighted by duration.
+
+Scenario buttons change only the current-state preview and sensors. History and exports remain at the fixed snapshot. Original `mock-data.js` is retained but not imported because its sample totals and events disagree.
+
+Integration points, following `docs/api-contract.md`:
+
+| Endpoint | Replace |
+| --- | --- |
+| `/homes/:homeId/current-status` | `power` and scenario sensor state in Dashboard |
+| `/homes/:homeId/summary` | `summary(period)` |
+| `/homes/:homeId/events` | `recentEvents` and timeline segments |
+| `/homes/:homeId/weekly-chart` | `weeklyChart` |
+| `/homes/:homeId/device-health` | sensor rows in `health()` |
+
+Add an authenticated API client, real home selection, loading/error/empty states, and stale-data handling before calling this a live tracker. Credentials must come from authentication, never committed files. Respect server confidence and SETUP_FAULT. Replace frozen dates and demo labels only after connecting the API.
+
+`app/globals.css` holds the design system and breakpoints; `components/Dashboard.tsx` holds the interactive prototype. Google Fonts supplies DM Sans and Manrope with sans-serif fallbacks. Reference files are unchanged.

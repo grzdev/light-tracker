@@ -1,0 +1,10 @@
+{
+  "name": "light-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix apps/frontend",
+    "build": "npm run build --prefix apps/frontend",
+    "typecheck": "npm run typecheck --prefix apps/frontend"
+  }
+}
