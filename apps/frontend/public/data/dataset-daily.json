@@ -1,0 +1,72 @@
+[
+  {
+    "date": "2026-08-30",
+    "gridOnHours": 14,
+    "gridOffHours": 9,
+    "unknownHours": 1,
+    "availabilityPercent": 60.9,
+    "coveragePercent": 95.8,
+    "outageCount": 3,
+    "longestOutageSeconds": 16200
+  },
+  {
+    "date": "2026-08-31",
+    "gridOnHours": 17,
+    "gridOffHours": 6,
+    "unknownHours": 1,
+    "availabilityPercent": 73.9,
+    "coveragePercent": 95.8,
+    "outageCount": 2,
+    "longestOutageSeconds": 10800
+  },
+  {
+    "date": "2026-09-01",
+    "gridOnHours": 11.5,
+    "gridOffHours": 11,
+    "unknownHours": 1.5,
+    "availabilityPercent": 51.1,
+    "coveragePercent": 93.8,
+    "outageCount": 3,
+    "longestOutageSeconds": 19800
+  },
+  {
+    "date": "2026-09-02",
+    "gridOnHours": 18,
+    "gridOffHours": 5.5,
+    "unknownHours": 0.5,
+    "availabilityPercent": 76.6,
+    "coveragePercent": 97.9,
+    "outageCount": 2,
+    "longestOutageSeconds": 9900
+  },
+  {
+    "date": "2026-09-03",
+    "gridOnHours": 15,
+    "gridOffHours": 8,
+    "unknownHours": 1,
+    "availabilityPercent": 65.2,
+    "coveragePercent": 95.8,
+    "outageCount": 3,
+    "longestOutageSeconds": 14400
+  },
+  {
+    "date": "2026-09-04",
+    "gridOnHours": 16,
+    "gridOffHours": 7,
+    "unknownHours": 1,
+    "availabilityPercent": 69.6,
+    "coveragePercent": 95.8,
+    "outageCount": 2,
+    "longestOutageSeconds": 12600
+  },
+  {
+    "date": "2026-09-05",
+    "gridOnHours": 13.5,
+    "gridOffHours": 4,
+    "unknownHours": 0.5,
+    "availabilityPercent": 77.1,
+    "coveragePercent": 97.2,
+    "outageCount": 3,
+    "longestOutageSeconds": 7200
+  }
+]

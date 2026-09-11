@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LightTrackerBackup",
+  "description": "Canonical backup specification for Light Tracker grid availability monitor",
+  "type": "object",
+  "required": [
+    "version",
+    "exportedAt",
+    "checksumSha256",
+    "home",
+    "sensors",
+    "gridEvents",
+    "dailySummaries"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" },
+    "exportedAt": { "type": "string", "format": "date-time" },
+    "checksumSha256": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "generator": { "type": "string" },
+    "home": {
+      "type": "object",
+      "required": ["id", "name", "location", "timezone"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "timezone": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "sensors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "deviceId", "online"],
+        "properties": {
+          "id": { "type": "string" },
+          "role": { "type": "string", "enum": ["GRID", "BACKUP"] },
+          "name": { "type": "string" },
+          "deviceId": { "type": "string" },
+          "online": { "type": "boolean" },
+          "lastSeenAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "rawObservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "sensorAOnline", "sensorBOnline", "state"],
+        "properties": {
+          "timestamp": { "type": "string", "format": "date-time" },
+          "sensorAOnline": { "type": "boolean" },
+          "sensorBOnline": { "type": "boolean" },
+          "state": { "type": "string", "enum": ["ON", "OFF", "UNKNOWN", "SETUP_FAULT"] },
+          "reasonCode": { "type": "string" }
+        }
+      }
+    },
+    "gridEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "recordedAt", "state", "reasonCode"],
+        "properties": {
+          "id": { "type": "string" },
+          "recordedAt": { "type": "string", "format": "date-time" },
+          "state": { "type": "string", "enum": ["ON", "OFF", "UNKNOWN", "SETUP_FAULT"] },
+          "previousState": { "type": "string" },
+          "reasonCode": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] },
+          "durationSeconds": { "type": ["number", "null"] }
+        }
+      }
+    },
+    "dailySummaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "gridOnHours", "gridOffHours", "unknownHours", "availabilityPercent", "coveragePercent"],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "gridOnHours": { "type": "number" },
+          "gridOffHours": { "type": "number" },
+          "unknownHours": { "type": "number" },
+          "availabilityPercent": { "type": "number" },
+          "coveragePercent": { "type": "number" },
+          "outageCount": { "type": "number" },
+          "longestOutageSeconds": { "type": "number" }
+        }
+      }
+    },
+    "integrationsConfig": {
+      "type": "object",
+      "properties": {
+        "autoBackupEnabled": { "type": "boolean" },
+        "cadence": { "type": "string", "enum": ["DAILY", "WEEKLY", "MANUAL"] },
+        "webhookUrl": { "type": "string" },
+        "secretToken": { "type": "string" },
+        "lastBackupAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

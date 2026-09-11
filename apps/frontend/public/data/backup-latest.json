@@ -1,0 +1,681 @@
+{
+  "$schema": "https://light-tracker.app/schemas/backup-v1.json",
+  "version": "1.0.0",
+  "exportedAt": "2026-09-05T18:00:00+01:00",
+  "generator": "light-tracker-web/0.1.0",
+  "home": {
+    "id": "home_abc123",
+    "name": "Alex D. Home",
+    "location": "Yaba, Lagos, Nigeria",
+    "timezone": "Africa/Lagos",
+    "createdAt": "2026-08-20T00:00:00+01:00"
+  },
+  "sensors": [
+    {
+      "id": "sensor_a",
+      "role": "GRID",
+      "name": "Grid Sensor (Main Inflow)",
+      "deviceId": "tuya_device_xyz",
+      "online": true,
+      "lastSeenAt": "2026-09-05T18:00:00+01:00"
+    },
+    {
+      "id": "sensor_b",
+      "role": "BACKUP",
+      "name": "Inverter Sensor (Router Backup)",
+      "deviceId": "tuya_device_abc",
+      "online": true,
+      "lastSeenAt": "2026-09-05T18:00:00+01:00"
+    }
+  ],
+  "rawObservations": [
+    {
+      "timestamp": "2026-09-05T12:00:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:05:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:10:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:15:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:20:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:25:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:30:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:35:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:40:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:45:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:50:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T12:55:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:00:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:05:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:10:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:15:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:20:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:25:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:30:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:35:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:40:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:45:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:50:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T13:55:00+01:00",
+      "sensorAOnline": false,
+      "sensorBOnline": true,
+      "state": "OFF",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE"
+    },
+    {
+      "timestamp": "2026-09-05T14:00:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:05:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:10:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:15:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:20:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:25:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:30:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:35:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:40:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:45:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:50:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T14:55:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:00:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:05:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:10:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:15:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:20:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:25:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:30:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:35:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:40:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:45:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:50:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T15:55:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:00:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:05:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:10:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:15:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:20:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:25:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:30:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:35:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:40:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:45:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:50:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T16:55:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:00:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:05:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:10:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:15:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:20:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:25:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:30:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:35:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:40:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:45:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:50:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    },
+    {
+      "timestamp": "2026-09-05T17:55:00+01:00",
+      "sensorAOnline": true,
+      "sensorBOnline": true,
+      "state": "ON",
+      "reasonCode": "GRID_SENSOR_REACHABLE"
+    }
+  ],
+  "gridEvents": [
+    {
+      "id": "evt_20260905_007",
+      "recordedAt": "2026-09-05T14:00:00+01:00",
+      "state": "ON",
+      "previousState": "OFF",
+      "reasonCode": "GRID_RESTORED_AFTER_OUTAGE",
+      "confidence": "HIGH",
+      "durationSeconds": 14400
+    },
+    {
+      "id": "evt_20260905_006",
+      "recordedAt": "2026-09-05T12:00:00+01:00",
+      "state": "OFF",
+      "previousState": "ON",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE",
+      "confidence": "HIGH",
+      "durationSeconds": 7200
+    },
+    {
+      "id": "evt_20260905_005",
+      "recordedAt": "2026-09-05T10:30:00+01:00",
+      "state": "ON",
+      "previousState": "UNKNOWN",
+      "reasonCode": "GRID_RESTORED_AFTER_UNKNOWN",
+      "confidence": "HIGH",
+      "durationSeconds": 5400
+    },
+    {
+      "id": "evt_20260905_004",
+      "recordedAt": "2026-09-05T10:00:00+01:00",
+      "state": "UNKNOWN",
+      "previousState": "ON",
+      "reasonCode": "BOTH_SENSORS_OFFLINE",
+      "confidence": "LOW",
+      "durationSeconds": 1800
+    },
+    {
+      "id": "evt_20260905_003",
+      "recordedAt": "2026-09-05T07:30:00+01:00",
+      "state": "ON",
+      "previousState": "OFF",
+      "reasonCode": "GRID_RESTORED_AFTER_OUTAGE",
+      "confidence": "HIGH",
+      "durationSeconds": 9000
+    },
+    {
+      "id": "evt_20260905_002",
+      "recordedAt": "2026-09-05T05:30:00+01:00",
+      "state": "OFF",
+      "previousState": "ON",
+      "reasonCode": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE",
+      "confidence": "HIGH",
+      "durationSeconds": 7200
+    },
+    {
+      "id": "evt_20260905_001",
+      "recordedAt": "2026-09-05T00:00:00+01:00",
+      "state": "ON",
+      "previousState": "OFF",
+      "reasonCode": "GRID_RESTORED_AFTER_OUTAGE",
+      "confidence": "HIGH",
+      "durationSeconds": 19800
+    }
+  ],
+  "dailySummaries": [
+    {
+      "date": "2026-08-30",
+      "gridOnHours": 14,
+      "gridOffHours": 9,
+      "unknownHours": 1,
+      "availabilityPercent": 60.9,
+      "coveragePercent": 95.8,
+      "outageCount": 3,
+      "longestOutageSeconds": 16200
+    },
+    {
+      "date": "2026-08-31",
+      "gridOnHours": 17,
+      "gridOffHours": 6,
+      "unknownHours": 1,
+      "availabilityPercent": 73.9,
+      "coveragePercent": 95.8,
+      "outageCount": 2,
+      "longestOutageSeconds": 10800
+    },
+    {
+      "date": "2026-09-01",
+      "gridOnHours": 11.5,
+      "gridOffHours": 11,
+      "unknownHours": 1.5,
+      "availabilityPercent": 51.1,
+      "coveragePercent": 93.8,
+      "outageCount": 3,
+      "longestOutageSeconds": 19800
+    },
+    {
+      "date": "2026-09-02",
+      "gridOnHours": 18,
+      "gridOffHours": 5.5,
+      "unknownHours": 0.5,
+      "availabilityPercent": 76.6,
+      "coveragePercent": 97.9,
+      "outageCount": 2,
+      "longestOutageSeconds": 9900
+    },
+    {
+      "date": "2026-09-03",
+      "gridOnHours": 15,
+      "gridOffHours": 8,
+      "unknownHours": 1,
+      "availabilityPercent": 65.2,
+      "coveragePercent": 95.8,
+      "outageCount": 3,
+      "longestOutageSeconds": 14400
+    },
+    {
+      "date": "2026-09-04",
+      "gridOnHours": 16,
+      "gridOffHours": 7,
+      "unknownHours": 1,
+      "availabilityPercent": 69.6,
+      "coveragePercent": 95.8,
+      "outageCount": 2,
+      "longestOutageSeconds": 12600
+    },
+    {
+      "date": "2026-09-05",
+      "gridOnHours": 13.5,
+      "gridOffHours": 4,
+      "unknownHours": 0.5,
+      "availabilityPercent": 77.1,
+      "coveragePercent": 97.2,
+      "outageCount": 3,
+      "longestOutageSeconds": 7200
+    }
+  ],
+  "integrationsConfig": {
+    "autoBackupEnabled": true,
+    "cadence": "DAILY",
+    "webhookUrl": "",
+    "lastBackupAt": "2026-09-05T02:00:00+01:00"
+  },
+  "checksumSha256": "1c5cd9c8d472748877e5f6522b45d74716146a8998d17a42d4e19e0e87913050"
+}

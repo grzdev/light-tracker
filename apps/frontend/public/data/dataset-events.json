@@ -1,0 +1,79 @@
+[
+  {
+    "event_id": "evt_20260905_007",
+    "recorded_at": "2026-09-05T14:00:00+01:00",
+    "state": "ON",
+    "previous_state": "OFF",
+    "duration_seconds": 14400,
+    "duration_hours": 4,
+    "reason_code": "GRID_RESTORED_AFTER_OUTAGE",
+    "confidence": "HIGH",
+    "is_censored": 1
+  },
+  {
+    "event_id": "evt_20260905_006",
+    "recorded_at": "2026-09-05T12:00:00+01:00",
+    "state": "OFF",
+    "previous_state": "ON",
+    "duration_seconds": 7200,
+    "duration_hours": 2,
+    "reason_code": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE",
+    "confidence": "HIGH",
+    "is_censored": 0
+  },
+  {
+    "event_id": "evt_20260905_005",
+    "recorded_at": "2026-09-05T10:30:00+01:00",
+    "state": "ON",
+    "previous_state": "UNKNOWN",
+    "duration_seconds": 5400,
+    "duration_hours": 1.5,
+    "reason_code": "GRID_RESTORED_AFTER_UNKNOWN",
+    "confidence": "HIGH",
+    "is_censored": 0
+  },
+  {
+    "event_id": "evt_20260905_004",
+    "recorded_at": "2026-09-05T10:00:00+01:00",
+    "state": "UNKNOWN",
+    "previous_state": "ON",
+    "duration_seconds": 1800,
+    "duration_hours": 0.5,
+    "reason_code": "BOTH_SENSORS_OFFLINE",
+    "confidence": "LOW",
+    "is_censored": 0
+  },
+  {
+    "event_id": "evt_20260905_003",
+    "recorded_at": "2026-09-05T07:30:00+01:00",
+    "state": "ON",
+    "previous_state": "OFF",
+    "duration_seconds": 9000,
+    "duration_hours": 2.5,
+    "reason_code": "GRID_RESTORED_AFTER_OUTAGE",
+    "confidence": "HIGH",
+    "is_censored": 0
+  },
+  {
+    "event_id": "evt_20260905_002",
+    "recorded_at": "2026-09-05T05:30:00+01:00",
+    "state": "OFF",
+    "previous_state": "ON",
+    "duration_seconds": 7200,
+    "duration_hours": 2,
+    "reason_code": "GRID_SENSOR_OFFLINE_BACKUP_ONLINE",
+    "confidence": "HIGH",
+    "is_censored": 0
+  },
+  {
+    "event_id": "evt_20260905_001",
+    "recorded_at": "2026-09-05T00:00:00+01:00",
+    "state": "ON",
+    "previous_state": "OFF",
+    "duration_seconds": 19800,
+    "duration_hours": 5.5,
+    "reason_code": "GRID_RESTORED_AFTER_OUTAGE",
+    "confidence": "HIGH",
+    "is_censored": 0
+  }
+]
