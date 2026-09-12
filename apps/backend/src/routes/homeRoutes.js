@@ -6,9 +6,17 @@ import {
   getLatestObservation,
   getLatestEvent,
   getEvents,
-  getDailySummary,
   getSummariesBetween,
 } from "../services/homeService.js";
+
+import {
+  calculateAvailabilityPercent,
+  calculateCoveragePercent,
+  calculateEventDurations,
+  getPeriodSeconds,
+  calculateDailyCoverage,
+  formatLagosTimestamp,
+} from "../utils/metrics.js";
 
 import {
   getLagosDateString,
@@ -19,6 +27,12 @@ import {
 
 const router = express.Router();
 
+const LAGOS_TIME_ZONE = "Africa/Lagos";
+const DEFAULT_STALE_THRESHOLD_SECONDS = 180;
+
+/**
+ * Standard internal error response.
+ */
 function internalError(res, error, label) {
   console.error(`${label}:`, error);
 
@@ -46,58 +60,154 @@ router.get("/:homeId/current-status", async (req, res) => {
       });
     }
 
-    const [sensors, latestObservation, latestEvent] =
-      await Promise.all([
-        getSensors(homeId),
-        getLatestObservation(homeId),
-        getLatestEvent(homeId),
-      ]);
+    const [
+      sensors,
+      latestObservation,
+      latestEvent,
+    ] = await Promise.all([
+      getSensors(homeId),
+      getLatestObservation(homeId),
+      getLatestEvent(homeId),
+    ]);
 
+    const gridSensor = sensors.find(
+      (sensor) => sensor.role === "GRID"
+    );
+
+    const backupSensor = sensors.find(
+      (sensor) => sensor.role === "BACKUP"
+    );
+
+    const now = new Date();
+
+    const staleThresholdSeconds = Number(
+      process.env.STALE_SENSOR_THRESHOLD_SECONDS ||
+        DEFAULT_STALE_THRESHOLD_SECONDS
+    );
+
+    const latestObservationTime =
+      latestObservation?.polled_at
+        ? new Date(latestObservation.polled_at)
+        : null;
+
+    const secondsSinceObservation =
+      latestObservationTime
+        ? Math.max(
+            0,
+            Math.floor(
+              (now.getTime() -
+                latestObservationTime.getTime()) /
+                1000
+            )
+          )
+        : null;
+
+    const observationIsStale =
+      secondsSinceObservation === null ||
+      secondsSinceObservation >
+        staleThresholdSeconds;
+
+    /**
+     * No event means there is no confirmed state.
+     */
     if (!latestEvent) {
       return res.json({
         homeId,
         state: "UNKNOWN",
         confidence: "LOW",
-        reasonCode: "BOTH_SENSORS_OFFLINE",
-        since: null,
+        reasonCode: observationIsStale
+          ? "SENSOR_DATA_STALE"
+          : "BOTH_SENSORS_OFFLINE",
+        since: latestObservationTime
+          ? getLagosDateTime(latestObservationTime)
+          : null,
         durationSeconds: 0,
-        lastUpdated: null,
+        lastUpdated: latestObservationTime
+          ? getLagosDateTime(latestObservationTime)
+          : null,
         sensors: {
           grid: {
-            id: sensors.find((s) => s.role === "GRID")?.id ?? null,
-            online: false,
-            lastSeen: null,
+            id: gridSensor?.id ?? null,
+            online: latestObservation
+              ? latestObservation.sensor_a_online
+              : false,
+            lastSeen: latestObservationTime
+              ? getLagosDateTime(latestObservationTime)
+              : null,
           },
           backup: {
-            id: sensors.find((s) => s.role === "BACKUP")?.id ?? null,
-            online: false,
-            lastSeen: null,
+            id: backupSensor?.id ?? null,
+            online: latestObservation
+              ? latestObservation.sensor_b_online
+              : false,
+            lastSeen: latestObservationTime
+              ? getLagosDateTime(latestObservationTime)
+              : null,
           },
         },
       });
     }
 
-    const gridSensor = sensors.find((s) => s.role === "GRID");
-    const backupSensor = sensors.find((s) => s.role === "BACKUP");
-
-    const currentStateStarted = new Date(latestEvent.recorded_at);
-    const now = new Date();
-
-    const durationSeconds = Math.max(
-      0,
-      Math.floor((now - currentStateStarted) / 1000)
+    const currentStateStarted = new Date(
+      latestEvent.recorded_at
     );
 
-    const lastUpdated = latestObservation?.polled_at
-      ? getLagosDateTime(new Date(latestObservation.polled_at))
-      : getLagosDateTime(new Date(latestEvent.recorded_at));
+    /**
+     * If sensor data is stale, the current state
+     * becomes UNKNOWN regardless of the last event.
+     *
+     * Historical events remain unchanged.
+     */
+    const currentState = observationIsStale
+      ? "UNKNOWN"
+      : latestEvent.state;
+
+    const currentConfidence = observationIsStale
+      ? "LOW"
+      : latestEvent.confidence;
+
+    const currentReasonCode = observationIsStale
+      ? "SENSOR_DATA_STALE"
+      : latestEvent.reason_code;
+
+    const durationSeconds = observationIsStale
+      ? latestObservationTime
+        ? Math.max(
+            0,
+            Math.floor(
+              (now.getTime() -
+                latestObservationTime.getTime()) /
+                1000
+            )
+          )
+        : 0
+      : Math.max(
+          0,
+          Math.floor(
+            (now.getTime() -
+              currentStateStarted.getTime()) /
+              1000
+          )
+        );
+
+    const since = observationIsStale
+      ? latestObservationTime
+        ? getLagosDateTime(latestObservationTime)
+        : null
+      : getLagosDateTime(currentStateStarted);
+
+    const lastUpdated = latestObservationTime
+      ? getLagosDateTime(latestObservationTime)
+      : getLagosDateTime(
+          new Date(latestEvent.recorded_at)
+        );
 
     return res.json({
       homeId,
-      state: latestEvent.state,
-      confidence: latestEvent.confidence,
-      reasonCode: latestEvent.reason_code,
-      since: getLagosDateTime(currentStateStarted),
+      state: currentState,
+      confidence: currentConfidence,
+      reasonCode: currentReasonCode,
+      since,
       durationSeconds,
       lastUpdated,
       sensors: {
@@ -106,10 +216,8 @@ router.get("/:homeId/current-status", async (req, res) => {
           online: latestObservation
             ? latestObservation.sensor_a_online
             : false,
-          lastSeen: latestObservation?.polled_at
-            ? getLagosDateTime(
-                new Date(latestObservation.polled_at)
-              )
+          lastSeen: latestObservationTime
+            ? getLagosDateTime(latestObservationTime)
             : null,
         },
         backup: {
@@ -117,16 +225,18 @@ router.get("/:homeId/current-status", async (req, res) => {
           online: latestObservation
             ? latestObservation.sensor_b_online
             : false,
-          lastSeen: latestObservation?.polled_at
-            ? getLagosDateTime(
-                new Date(latestObservation.polled_at)
-              )
+          lastSeen: latestObservationTime
+            ? getLagosDateTime(latestObservationTime)
             : null,
         },
       },
     });
   } catch (error) {
-    return internalError(res, error, "Current status error");
+    return internalError(
+      res,
+      error,
+      "Current status error"
+    );
   }
 });
 
@@ -169,7 +279,9 @@ router.get("/:homeId/events", async (req, res) => {
       });
     }
 
-    const requestedLimit = Number(req.query.limit ?? 100);
+    const requestedLimit = Number(
+      req.query.limit ?? 100
+    );
 
     const limit =
       Number.isInteger(requestedLimit) &&
@@ -185,28 +297,55 @@ router.get("/:homeId/events", async (req, res) => {
       limit
     );
 
+    /**
+     * The contract expects durations in seconds.
+     *
+     * The API's date range is inclusive. When the caller
+     * explicitly requests 23:59:59, treat the end as the
+     * final second of that day rather than cutting the
+     * duration one second short.
+     */
+    let durationEnd = to < now ? to : now;
+
+    const toIsEndOfSecond =
+      to.getMilliseconds() === 0;
+
+    if (toIsEndOfSecond) {
+      durationEnd = new Date(
+        durationEnd.getTime() + 1000
+      );
+    }
+
+    const eventsWithDurations =
+      calculateEventDurations(
+        events,
+        durationEnd
+      );
+
     return res.json({
       homeId,
-      from: getLagosDateTime(from),
-      to: getLagosDateTime(to),
-      events: events.map((event) => ({
-        id: event.id,
-        state: event.state,
-        reasonCode: event.reason_code,
-        confidence: event.confidence,
-        recordedAt: getLagosDateTime(
-          new Date(event.recorded_at)
-        ),
-        durationSeconds:
-          event.duration_in_previous_state_ms === null
-            ? null
-            : Math.floor(
-                event.duration_in_previous_state_ms / 1000
-              ),
-      })),
+      from: formatLagosTimestamp(from),
+      to: formatLagosTimestamp(to),
+      events: eventsWithDurations.map(
+        (event) => ({
+          id: event.id,
+          state: event.state,
+          reasonCode: event.reason_code,
+          confidence: event.confidence,
+          recordedAt: formatLagosTimestamp(
+            event.recorded_at
+          ),
+          durationSeconds:
+            event.durationSeconds,
+        })
+      ),
     });
   } catch (error) {
-    return internalError(res, error, "Events error");
+    return internalError(
+      res,
+      error,
+      "Events error"
+    );
   }
 });
 
@@ -229,7 +368,14 @@ router.get("/:homeId/summary", async (req, res) => {
 
     const period = req.query.period || "today";
 
-    if (!["today", "yesterday", "week", "month"].includes(period)) {
+    if (
+      ![
+        "today",
+        "yesterday",
+        "week",
+        "month",
+      ].includes(period)
+    ) {
       return res.status(400).json({
         error: "INVALID_DATE_RANGE",
         message:
@@ -239,13 +385,29 @@ router.get("/:homeId/summary", async (req, res) => {
     }
 
     const today = new Date();
-    const todayString = getLagosDateString(today);
+
+    const todayString =
+      getLagosDateString(today);
 
     let fromDate;
     let toDate;
 
     if (period === "today") {
-      const requestedDate = req.query.date || todayString;
+      const requestedDate =
+        req.query.date || todayString;
+
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(
+          requestedDate
+        )
+      ) {
+        return res.status(400).json({
+          error: "INVALID_DATE_RANGE",
+          message:
+            "date must use YYYY-MM-DD format",
+          statusCode: 400,
+        });
+      }
 
       fromDate = requestedDate;
       toDate = requestedDate;
@@ -270,7 +432,9 @@ router.get("/:homeId/summary", async (req, res) => {
         6
       );
 
-      fromDate = getLagosDateString(start);
+      fromDate =
+        getLagosDateString(start);
+
       toDate = todayString;
     }
 
@@ -279,15 +443,18 @@ router.get("/:homeId/summary", async (req, res) => {
         `${todayString.slice(0, 7)}-01T00:00:00+01:00`
       );
 
-      fromDate = getLagosDateString(start);
+      fromDate =
+        getLagosDateString(start);
+
       toDate = todayString;
     }
 
-    const summaries = await getSummariesBetween(
-      homeId,
-      fromDate,
-      toDate
-    );
+    const summaries =
+      await getSummariesBetween(
+        homeId,
+        fromDate,
+        toDate
+      );
 
     if (summaries.length === 0) {
       return res.status(404).json({
@@ -297,62 +464,163 @@ router.get("/:homeId/summary", async (req, res) => {
       });
     }
 
-    const gridOnSeconds = summaries.reduce(
-      (total, item) => total + Number(item.grid_on_seconds),
-      0
-    );
+    const gridOnSeconds =
+      summaries.reduce(
+        (total, item) =>
+          total +
+          Number(
+            item.grid_on_seconds ?? 0
+          ),
+        0
+      );
 
-    const gridOffSeconds = summaries.reduce(
-      (total, item) => total + Number(item.grid_off_seconds),
-      0
-    );
+    const gridOffSeconds =
+      summaries.reduce(
+        (total, item) =>
+          total +
+          Number(
+            item.grid_off_seconds ?? 0
+          ),
+        0
+      );
 
-    const unknownSeconds = summaries.reduce(
-      (total, item) => total + Number(item.unknown_seconds),
-      0
-    );
+    const unknownSeconds =
+      summaries.reduce(
+        (total, item) =>
+          total +
+          Number(
+            item.unknown_seconds ?? 0
+          ),
+        0
+      );
 
-    const outageCount = summaries.reduce(
-      (total, item) => total + Number(item.outage_count),
-      0
-    );
+    const outageCount =
+      summaries.reduce(
+        (total, item) =>
+          total +
+          Number(
+            item.outage_count ?? 0
+          ),
+        0
+      );
 
-    const longestOutageSeconds = Math.max(
-      ...summaries.map((item) =>
-        Number(item.longest_outage_seconds ?? 0)
-      )
-    );
+    const longestOutageSeconds =
+      Math.max(
+        0,
+        ...summaries.map((item) =>
+          Number(
+            item.longest_outage_seconds ?? 0
+          )
+        )
+      );
 
     const avgOutageDurationSeconds =
       outageCount > 0
-        ? Math.round(gridOffSeconds / outageCount)
+        ? Math.round(
+            gridOffSeconds / outageCount
+          )
         : 0;
 
-    const totalObserved =
+    /**
+     * Availability excludes UNKNOWN.
+     *
+     * ON / (ON + OFF)
+     */
+    const availabilityPercent =
+      calculateAvailabilityPercent(
+        gridOnSeconds,
+        gridOffSeconds
+      );
+
+    /**
+     * Calculate the period boundaries in actual
+     * timestamps for coverage.
+     */
+    let periodStart;
+    let periodEnd;
+
+    if (period === "today") {
+      periodStart = new Date(
+        `${fromDate}T00:00:00+01:00`
+      );
+
+      periodEnd =
+        fromDate === todayString
+          ? today
+          : new Date(
+              `${fromDate}T23:59:59+01:00`
+            );
+
+      /**
+       * A historical day is a complete 24-hour period.
+       */
+      if (fromDate !== todayString) {
+        periodEnd = new Date(
+          `${fromDate}T00:00:00+01:00`
+        );
+
+        periodEnd.setTime(
+          periodEnd.getTime() +
+            24 * 60 * 60 * 1000
+        );
+      }
+    } else if (period === "yesterday") {
+      periodStart = new Date(
+        `${fromDate}T00:00:00+01:00`
+      );
+
+      periodEnd = new Date(
+        periodStart.getTime() +
+          24 * 60 * 60 * 1000
+      );
+    } else if (period === "week") {
+      periodStart = new Date(
+        `${fromDate}T00:00:00+01:00`
+      );
+
+      periodEnd =
+        toDate === todayString
+          ? today
+          : new Date(
+              `${toDate}T23:59:59+01:00`
+            );
+    } else {
+      periodStart = new Date(
+        `${fromDate}T00:00:00+01:00`
+      );
+
+      periodEnd =
+        toDate === todayString
+          ? today
+          : new Date(
+              `${toDate}T23:59:59+01:00`
+            );
+    }
+
+    const periodSeconds =
+      period === "today" &&
+      fromDate !== todayString
+        ? 24 * 60 * 60
+        : getPeriodSeconds(
+            period,
+            periodStart,
+            periodEnd
+          );
+
+    const observedSeconds =
       gridOnSeconds +
       gridOffSeconds +
       unknownSeconds;
 
-    const availabilityPercent =
-      totalObserved > 0
-        ? Number(
-            ((gridOnSeconds / totalObserved) * 100).toFixed(1)
-          )
-        : 0;
-
     const coveragePercent =
-      summaries.length > 0
-        ? Number(
-            (
-              summaries.reduce(
-                (total, item) =>
-                  total + Number(item.coverage_percent ?? 0),
-                0
-              ) / summaries.length
-            ).toFixed(1)
-          )
-        : 0;
+      calculateCoveragePercent(
+        observedSeconds,
+        periodSeconds
+      );
 
+    /**
+     * Hourly breakdown is required for today.
+     */
     const hourlyBreakdown = [];
 
     if (period === "today") {
@@ -363,21 +631,37 @@ router.get("/:homeId/summary", async (req, res) => {
         1000
       );
 
+      /**
+       * Events are returned newest-first.
+       *
+       * For each hour, find the most recent event
+       * that had already occurred by that hour.
+       */
       for (let hour = 0; hour < 24; hour++) {
         const eventForHour = events
           .filter((event) => {
-            const eventDate = new Date(event.recorded_at);
+            const eventDate =
+              new Date(event.recorded_at);
 
-            const hourString = new Intl.DateTimeFormat(
-              "en-US",
-              {
-                timeZone: "Africa/Lagos",
-                hour: "numeric",
-                hourCycle: "h23",
-              }
-            ).format(eventDate);
+            const eventHour = Number(
+              new Intl.DateTimeFormat(
+                "en-US",
+                {
+                  timeZone:
+                    LAGOS_TIME_ZONE,
+                  hour: "numeric",
+                  hourCycle: "h23",
+                }
+              ).format(eventDate)
+            );
 
-            return Number(hourString) <= hour;
+            const eventDateString =
+              getLagosDateString(eventDate);
+
+            return (
+              eventDateString === fromDate &&
+              eventHour <= hour
+            );
           })
           .sort(
             (a, b) =>
@@ -385,19 +669,49 @@ router.get("/:homeId/summary", async (req, res) => {
               new Date(a.recorded_at)
           )[0];
 
-        if (!eventForHour) {
+        /**
+         * If no event happened today before this hour,
+         * look for the most recent event before today.
+         *
+         * This allows a state that began yesterday
+         * to correctly carry into today's hours.
+         */
+        const previousEvent =
+          !eventForHour
+            ? events
+                .filter(
+                  (event) =>
+                    new Date(
+                      event.recorded_at
+                    ) <
+                    new Date(
+                      `${fromDate}T00:00:00+01:00`
+                    )
+                )
+                .sort(
+                  (a, b) =>
+                    new Date(b.recorded_at) -
+                    new Date(a.recorded_at)
+                )[0]
+            : null;
+
+        const selectedEvent =
+          eventForHour || previousEvent;
+
+        if (!selectedEvent) {
           continue;
         }
 
         hourlyBreakdown.push({
           hour,
-          state: eventForHour.state,
+          state: selectedEvent.state,
           availabilityPercent:
-            eventForHour.state === "ON"
+            selectedEvent.state === "ON"
               ? 100
-              : eventForHour.state === "UNKNOWN"
-                ? null
-                : 0,
+              : selectedEvent.state ===
+                "UNKNOWN"
+              ? null
+              : 0,
         });
       }
     }
@@ -405,7 +719,10 @@ router.get("/:homeId/summary", async (req, res) => {
     return res.json({
       homeId,
       period,
-      date: period === "today" ? fromDate : null,
+      date:
+        period === "today"
+          ? fromDate
+          : null,
       gridOnSeconds,
       gridOffSeconds,
       unknownSeconds,
@@ -417,7 +734,11 @@ router.get("/:homeId/summary", async (req, res) => {
       hourlyBreakdown,
     });
   } catch (error) {
-    return internalError(res, error, "Summary error");
+    return internalError(
+      res,
+      error,
+      "Summary error"
+    );
   }
 });
 
@@ -438,12 +759,17 @@ router.get("/:homeId/device-health", async (req, res) => {
       });
     }
 
-    const sensors = await getSensors(homeId);
-    const latestObservation =
-      await getLatestObservation(homeId);
+    const [
+      sensors,
+      latestObservation,
+    ] = await Promise.all([
+      getSensors(homeId),
+      getLatestObservation(homeId),
+    ]);
 
     const staleThresholdSeconds = Number(
-      process.env.STALE_SENSOR_THRESHOLD_SECONDS || 180
+      process.env.STALE_SENSOR_THRESHOLD_SECONDS ||
+        DEFAULT_STALE_THRESHOLD_SECONDS
     );
 
     const now = new Date();
@@ -458,22 +784,30 @@ router.get("/:homeId/device-health", async (req, res) => {
             ? latestObservation.sensor_a_online
             : latestObservation.sensor_b_online;
 
-        lastSeenAt = latestObservation.polled_at;
+        lastSeenAt =
+          latestObservation.polled_at;
       }
 
       const lastSeenDate = lastSeenAt
         ? new Date(lastSeenAt)
         : null;
 
-      const secondsSinceLastSeen = lastSeenDate
-        ? Math.floor(
-            (now - lastSeenDate) / 1000
-          )
-        : null;
+      const secondsSinceLastSeen =
+        lastSeenDate
+          ? Math.max(
+              0,
+              Math.floor(
+                (now.getTime() -
+                  lastSeenDate.getTime()) /
+                  1000
+              )
+            )
+          : null;
 
       const isStale =
         secondsSinceLastSeen === null ||
-        secondsSinceLastSeen > staleThresholdSeconds;
+        secondsSinceLastSeen >
+          staleThresholdSeconds;
 
       return {
         id: sensor.id,
@@ -483,9 +817,10 @@ router.get("/:homeId/device-health", async (req, res) => {
         lastSeenAt: lastSeenDate
           ? getLagosDateTime(lastSeenDate)
           : null,
-        staleSince: isStale && lastSeenDate
-          ? getLagosDateTime(lastSeenDate)
-          : null,
+        staleSince:
+          isStale && lastSeenDate
+            ? getLagosDateTime(lastSeenDate)
+            : null,
         isStale,
         staleThresholdSeconds,
       };
@@ -521,22 +856,30 @@ router.get("/:homeId/weekly-chart", async (req, res) => {
       });
     }
 
-    const today = startOfLagosDay(new Date());
+    const today =
+      startOfLagosDay(new Date());
 
-    const start = subtractDays(today, 6);
-
-    const fromDate = getLagosDateString(start);
-    const toDate = getLagosDateString(today);
-
-    const summaries = await getSummariesBetween(
-      homeId,
-      fromDate,
-      toDate
+    const start = subtractDays(
+      today,
+      6
     );
+
+    const fromDate =
+      getLagosDateString(start);
+
+    const toDate =
+      getLagosDateString(today);
+
+    const summaries =
+      await getSummariesBetween(
+        homeId,
+        fromDate,
+        toDate
+      );
 
     const summaryMap = new Map(
       summaries.map((summary) => [
-        summary.date,
+        String(summary.date),
         summary,
       ])
     );
@@ -552,37 +895,56 @@ router.get("/:homeId/weekly-chart", async (req, res) => {
       const dateString =
         getLagosDateString(date);
 
-      const summary = summaryMap.get(dateString);
+      const summary =
+        summaryMap.get(dateString);
+
+      const gridOnSeconds = Number(
+        summary?.grid_on_seconds ?? 0
+      );
+
+      const gridOffSeconds = Number(
+        summary?.grid_off_seconds ?? 0
+      );
+
+      const unknownSeconds = Number(
+        summary?.unknown_seconds ?? 0
+      );
+
+      const availabilityPercent =
+        calculateAvailabilityPercent(
+          gridOnSeconds,
+          gridOffSeconds
+        );
+
+      const coveragePercent =
+        summary
+          ? calculateDailyCoverage(summary)
+          : 0;
 
       days.push({
         date: dateString,
-        gridOnHours: summary
-          ? Number(
-              (
-                Number(summary.grid_on_seconds) / 3600
-              ).toFixed(2)
-            )
-          : 0,
-        gridOffHours: summary
-          ? Number(
-              (
-                Number(summary.grid_off_seconds) / 3600
-              ).toFixed(2)
-            )
-          : 0,
-        unknownHours: summary
-          ? Number(
-              (
-                Number(summary.unknown_seconds) / 3600
-              ).toFixed(2)
-            )
-          : 0,
-        availabilityPercent: summary
-          ? Number(summary.availability_percent ?? 0)
-          : 0,
-        coveragePercent: summary
-          ? Number(summary.coverage_percent ?? 0)
-          : 0,
+
+        gridOnHours: Number(
+          (
+            gridOnSeconds / 3600
+          ).toFixed(2)
+        ),
+
+        gridOffHours: Number(
+          (
+            gridOffSeconds / 3600
+          ).toFixed(2)
+        ),
+
+        unknownHours: Number(
+          (
+            unknownSeconds / 3600
+          ).toFixed(2)
+        ),
+
+        availabilityPercent,
+
+        coveragePercent,
       });
     }
 
