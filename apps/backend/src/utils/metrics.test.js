@@ -42,37 +42,49 @@ test("availability returns null when there is no confirmed ON/OFF time", () => {
   );
 });
 
-test("coverage includes UNKNOWN as observed time", () => {
-  const observedSeconds =
+test("coverage excludes UNKNOWN time", () => {
+  const confirmedSeconds =
     18 * 60 * 60 +
-    4 * 60 * 60 +
-    2 * 60 * 60;
+    4 * 60 * 60;
 
   const coverage =
     calculateCoveragePercent(
-      observedSeconds,
+      confirmedSeconds,
       24 * 60 * 60
     );
 
   assert.equal(
     coverage,
-    100
+    91.67
   );
 });
 
-test("coverage detects missing time", () => {
-  const observedSeconds =
-    12 * 60 * 60;
+test("coverage returns 87.5 percent for 21 confirmed hours", () => {
+  const confirmedSeconds =
+    21 * 60 * 60;
 
   const coverage =
     calculateCoveragePercent(
-      observedSeconds,
+      confirmedSeconds,
       24 * 60 * 60
     );
 
   assert.equal(
     coverage,
-    50
+    87.5
+  );
+});
+
+test("coverage returns 0 when there is no confirmed ON/OFF time", () => {
+  const coverage =
+    calculateCoveragePercent(
+      0,
+      24 * 60 * 60
+    );
+
+  assert.equal(
+    coverage,
+    0
   );
 });
 
@@ -178,34 +190,52 @@ test("event duration rounds fractional seconds correctly", () => {
   );
 });
 
-test("daily coverage counts ON, OFF and UNKNOWN as observed", () => {
+test("daily coverage counts only ON and OFF as confirmed time", () => {
   const summary = {
     grid_on_seconds:
       18 * 60 * 60,
+
     grid_off_seconds:
       4 * 60 * 60,
-    unknown_seconds:
+
+    grid_unknown_seconds:
       2 * 60 * 60,
   };
 
   assert.equal(
     calculateDailyCoverage(summary),
-    100
+    91.67
   );
 });
 
-test("daily coverage detects a missing period", () => {
+test("daily coverage detects missing period", () => {
   const summary = {
     grid_on_seconds:
       12 * 60 * 60,
+
     grid_off_seconds:
       6 * 60 * 60,
-    unknown_seconds: 0,
+
+    unknown_seconds: 6 * 60 * 60,
   };
 
   assert.equal(
     calculateDailyCoverage(summary),
     75
+  );
+});
+
+test("daily coverage returns 0 when there is no confirmed ON/OFF time", () => {
+  const summary = {
+    grid_on_seconds: 0,
+    grid_off_seconds: 0,
+    unknown_seconds:
+      24 * 60 * 60,
+  };
+
+  assert.equal(
+    calculateDailyCoverage(summary),
+    0
   );
 });
 

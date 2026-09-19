@@ -307,10 +307,32 @@ router.get("/:homeId/events", async (req, res) => {
      */
     let durationEnd = to < now ? to : now;
 
-    const toIsEndOfSecond =
-      to.getMilliseconds() === 0;
+    // The API range is inclusive when the caller explicitly
+    // requests the final second of a Lagos calendar day.
+    const lagosEndOfDay = new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        timeZone: LAGOS_TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23",
+      }
+    ).formatToParts(to);
 
-    if (toIsEndOfSecond) {
+    const lagosParts = Object.fromEntries(
+      lagosEndOfDay.map((part) => [part.type, part.value])
+    );
+
+    const isExplicitLagosEndOfDay =
+      lagosParts.hour === "23" &&
+      lagosParts.minute === "59" &&
+      lagosParts.second === "59";
+
+    if (isExplicitLagosEndOfDay) {
       durationEnd = new Date(
         durationEnd.getTime() + 1000
       );
@@ -607,14 +629,15 @@ router.get("/:homeId/summary", async (req, res) => {
             periodEnd
           );
 
-    const observedSeconds =
+    // Coverage measures confirmed ON/OFF time against elapsed time.
+    // UNKNOWN time is deliberately excluded from coverage.
+    const confirmedSeconds =
       gridOnSeconds +
-      gridOffSeconds +
-      unknownSeconds;
+      gridOffSeconds;
 
     const coveragePercent =
       calculateCoveragePercent(
-        observedSeconds,
+        confirmedSeconds,
         periodSeconds
       );
 
